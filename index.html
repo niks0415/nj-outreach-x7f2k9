@@ -471,10 +471,37 @@ linkedin.com/in/iamniks001
     document.getElementById('emailSubject').value = c.subject;
     document.getElementById('emailBody').value = c.body;
   }catch(e){
-    document.getElementById('emailBody').value = 'Generation failed — click Regenerate to try again.';
-    console.error(e);
+    console.warn('AI generation unavailable, using template fallback', e);
+    const fallback = buildTemplateEmail(c);
+    c.subject = fallback.subject;
+    c.body = fallback.body;
+    c.status = 'generated';
+    persist();
+    render();
+    document.getElementById('emailSubject').value = c.subject;
+    document.getElementById('emailBody').value = c.body;
   }
   document.getElementById('sendBtn').disabled = false;
+}
+
+function buildTemplateEmail(c){
+  const title = c.title ? c.title : 'Team';
+  const greeting = `Hi ${c.name.split(' ')[0]},`;
+  const subject = `Data Engineer referral — ${c.company}`;
+  const body = `${greeting}
+
+I'm a Data Engineer with about 2 years of experience, currently at Bitwise Solutions, working mainly with GCP (BigQuery, Cloud Composer/Airflow, Pub/Sub) and Snowflake/dbt for building and optimizing ETL pipelines. I recently cut BigQuery query execution time by 40-50% on a client project and built a config-driven Airflow reporting framework now used as the team standard.
+
+I'm exploring Data Engineer opportunities at ${c.company} and was hoping you might be open to a referral, or could point me to the right person on the team. Happy to share my resume and background, and would really appreciate even a quick pointer.
+
+Would a short call sometime this week work, or is there someone better placed for me to reach out to?
+
+Thanks for considering it,
+
+Nikhil Jadhav
+iamnikhil04152@gmail.com | +91 7823064192
+linkedin.com/in/iamniks001`;
+  return { subject, body };
 }
 
 function regenerate(){
